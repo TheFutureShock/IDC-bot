@@ -7,7 +7,7 @@ import (
 )
 
 func channelDeleted(s *discordgo.Session, c *discordgo.ChannelDelete) {
-	p := getNukePredictor(c.GuildID)
+	p := nukePredictors[c.GuildID]
 
 	p.IncreaseSuspicionLevel(25)
 
@@ -17,7 +17,7 @@ func channelDeleted(s *discordgo.Session, c *discordgo.ChannelDelete) {
 }
 
 func memberBanned(s *discordgo.Session, m *discordgo.GuildBanAdd) {
-	p := getNukePredictor(m.GuildID)
+	p := nukePredictors[m.GuildID]
 
 	p.IncreaseSuspicionLevel(20)
 
@@ -25,7 +25,7 @@ func memberBanned(s *discordgo.Session, m *discordgo.GuildBanAdd) {
 }
 
 func memberKicked(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
-	p := getNukePredictor(m.GuildID)
+	p := nukePredictors[m.GuildID]
 
 	p.IncreaseSuspicionLevel(20)
 

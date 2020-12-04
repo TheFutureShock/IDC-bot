@@ -9,7 +9,7 @@ import (
 )
 
 const BrandedColor = 16747590
-const reportChannel = "783212613915770891"
+const reportChannel = "770899887260303390"
 
 func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	if antispam.Increase(msg.Author.ID, msg.ID) {
@@ -25,7 +25,7 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	command := strings.TrimPrefix(args[0], prefix)
 
 	if command == "status" {
-		p := getNukePredictor(msg.GuildID)
+		p := nukePredictors[msg.GuildID]
 		var embed *discordgo.MessageEmbed
 
 		if p.Triggered {
@@ -65,7 +65,7 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	}
 
 	if command == "restore" {
-		p := getNukePredictor(msg.GuildID)
+		p := nukePredictors[msg.GuildID]
 		if !p.Triggered {
 			s.ChannelMessageSend(msg.ChannelID, "Server not in lockdown.")
 			return

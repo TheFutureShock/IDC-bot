@@ -14,7 +14,7 @@ import (
 )
 
 var client *discordgo.Session
-var nukePredictors []*nukeprediction.NukePrediction
+var nukePredictors map[string]*nukeprediction.NukePrediction
 var antispam *AntiSpam.AntiSpam
 
 var prefix string
@@ -30,7 +30,7 @@ func main() {
 
 	prefix = os.Getenv("PREFIX")
 
-	go fillPredictors()
+	fillPredictors()
 
 	antispam = &AntiSpam.AntiSpam{
 		Users: make(map[string]struct {

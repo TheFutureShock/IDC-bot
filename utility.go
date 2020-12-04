@@ -34,17 +34,10 @@ func fillPredictors() {
 			predictor.Cache.Pins[channel.ID] = messages
 		}
 
-		nukePredictors = append(nukePredictors, predictor)
+		nukePredictors[guild.ID] = predictor
 
 		time.Sleep(time.Second * 1)
 	}
 }
 
-func getNukePredictor(guildID string) *nukeprediction.NukePrediction {
-	for _, predictor := range nukePredictors {
-		if predictor.GuildID == guildID {
-			return predictor
-		}
-	}
-	return nil // should never ever happen
-}
+
