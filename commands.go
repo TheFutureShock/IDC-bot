@@ -66,10 +66,17 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 
 	if command == "restore" {
 		p := nukePredictors[msg.GuildID]
+
 		if !p.Triggered {
 			s.ChannelMessageSend(msg.ChannelID, "Server not in lockdown.")
 			return
 		}
+
+		if p.Restoring{
+			s.ChannelMessageSend(msg.ChannelID, "Server already attempting to restore .")
+			return
+		}
+
 		strikes := strings.Join(p.Strikes, "\n")
 
 		embed := &discordgo.MessageEmbed{

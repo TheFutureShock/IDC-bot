@@ -19,6 +19,7 @@ type NukePrediction struct {
 	Timer              *time.Timer
 	Client             *discordgo.Session
 	Strikes            []string
+	Restoring          bool
 	Cache              *struct {
 		Pins map[string][]*discordgo.Message
 	}
@@ -64,6 +65,7 @@ func (N *NukePrediction) Lockdown() {
 }
 
 func (N *NukePrediction) Restore() {
+	N.Restoring = true
 	for _, role := range N.RestorableRoles {
 		N.Client.GuildRoleEdit(N.GuildID, role.ID, role.Name, role.Color, role.Hoist, role.Permissions, role.Mentionable)
 	}
@@ -104,6 +106,7 @@ func (N *NukePrediction) Restore() {
 	N.RestorableRoles = []*discordgo.Role{}
 	N.Strikes = []string{}
 	N.Triggered = false
+	N.Restoring = false
 
 }
 

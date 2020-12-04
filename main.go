@@ -30,6 +30,8 @@ func main() {
 
 	prefix = os.Getenv("PREFIX")
 
+	nukePredictors = make(map[string]*nukeprediction.NukePrediction)
+
 	fillPredictors()
 
 	antispam = &AntiSpam.AntiSpam{
