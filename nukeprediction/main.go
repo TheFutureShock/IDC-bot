@@ -66,18 +66,39 @@ func (N *NukePrediction) Lockdown() {
 
 func (N *NukePrediction) Restore() {
 	N.Restoring = true
+
 	for _, role := range N.RestorableRoles {
 		N.Client.GuildRoleEdit(N.GuildID, role.ID, role.Name, role.Color, role.Hoist, role.Permissions, role.Mentionable)
 	}
 
+	adoptableChildren := make(map[string][]*discordgo.Channel)
+
 	sort.SliceStable(N.RestorableChannels, func(i, j int) bool {
+		fmt.Println(N.RestorableChannels[i].ParentID)
 		if N.RestorableChannels[i].Type == discordgo.ChannelTypeGuildCategory {
+			children := []*discordgo.Channel{}
+			for _, child := range N.RestorableChannels {
+				if child.ParentID == N.RestorableChannels[i].ID {
+					children = append(children, child)
+				}
+			}
+
+			if len(children) != 0 {
+				adoptableChildren[N.RestorableChannels[i].Name] = children
+			}
+
 			return true
 		}
 		return false
 	})
 
 	for _, channel := range N.RestorableChannels {
+
+		adopts := adoptableChildren[channel.Name]
+
+		var channel1 *discordgo.Channel
+
+
 		channel1, err := N.Client.GuildChannelCreateComplex(N.GuildID, discordgo.GuildChannelCreateData{
 			Name:                 channel.Name,
 			Type:                 channel.Type,
@@ -90,6 +111,12 @@ func (N *NukePrediction) Restore() {
 			ParentID:             channel.ParentID,
 			NSFW:                 channel.NSFW,
 		})
+
+		if adopts != nil {
+			for _, adopt := range adopts {
+				adopt.ParentID = channel1.ID
+			}
+		}
 
 		if err == nil {
 			messages := N.Cache.Pins[channel.ID]
