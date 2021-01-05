@@ -72,7 +72,7 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 			return
 		}
 
-		if p.Restoring{
+		if p.Restoring {
 			s.ChannelMessageSend(msg.ChannelID, "Server already attempting to restore .")
 			return
 		}
@@ -176,6 +176,58 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 		}
 
 		s.ChannelMessageSendEmbed(msg.ChannelID, embed)
+	}
+
+	// watchlist commands
+
+	if command == "watchlist" {
+		if args[1] == "add" {
+			userID := args[2]
+			reason := strings.Join(args[3:], " ")
+			user, err := client.User(userID)
+			if err != nil {
+				client.ChannelMessageSend(msg.ChannelID, "invalid USER ID")
+				return
+			}
+
+			if reason == ""{
+				client.ChannelMessageSend(msg.ChannelID, "missing reason")
+				return
+			}
+
+			g, _ := client.Guild(msg.GuildID)
+
+			WatchlistADDREPORT.Exec(userID, fmt.Sprintf("%s#%s", user.Username, user.Discriminator), user.AvatarURL(""), reason, msg.GuildID, g.Name)
+
+			row := WatchlistCOUNT.QueryRow()
+			var count int
+			row.Scan(&count)
+
+			embed := &discordgo.MessageEmbed{
+				Title:       "Suspect Added",
+				Color:       BrandedColor,
+				Description: fmt.Sprintf("%s#%s", user.Username, user.Discriminator),
+				Image: &discordgo.MessageEmbedImage{
+					URL: user.AvatarURL(""),
+				},
+				Fields: []*discordgo.MessageEmbedField{
+					&discordgo.MessageEmbedField{
+						Name:  "Users in watchlist: ",
+						Value: strconv.Itoa(count),
+					},
+				},
+				Footer: &discordgo.MessageEmbedFooter{
+					Text:    "Written by [REDACTED]#4242",
+					IconURL: "https://cdn.discordapp.com/attachments/781803550598627341/782155510429909012/pfp2.png",
+				},
+			}
+
+			client.ChannelMessageSendEmbed(msg.ChannelID, embed)
+		}
+
+		if args[1] == "lookup"{
+			
+		}
 	}
 
 }

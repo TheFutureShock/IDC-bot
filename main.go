@@ -22,6 +22,9 @@ var prefix string
 func main() {
 	godotenv.Load()
 
+	initDB()
+	defer Database.Close()
+
 	client, _ = discordgo.New(fmt.Sprintf("Bot %s", os.Getenv("TOKEN")))
 	err := client.Open()
 	if err != nil {
