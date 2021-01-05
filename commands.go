@@ -190,7 +190,7 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 				return
 			}
 
-			if reason == ""{
+			if reason == "" {
 				client.ChannelMessageSend(msg.ChannelID, "missing reason")
 				return
 			}
@@ -225,8 +225,44 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 			client.ChannelMessageSendEmbed(msg.ChannelID, embed)
 		}
 
-		if args[1] == "lookup"{
-			
+		if args[1] == "lookup" {
+			if len(args) != 3 {
+				client.ChannelMessageSend(msg.ChannelID, "invalid USER ID")
+				return
+			}
+			userID := args[2]
+
+			var list []WatchlistEntree
+			WatchlistUSERREPORTS.Select(&list, userID)
+
+			if len(list) < 1 {
+				client.ChannelMessageSend(msg.ChannelID, "user is not on the list")
+				return
+			}
+
+			r1 := list[0]
+
+			var fields []*discordgo.MessageEmbedField
+
+			for i, report := range list {
+				fields = append(fields, &discordgo.MessageEmbedField{Name: fmt.Sprintf("report %d", i+1), Value: fmt.Sprintf("Reported in: %s\n Reason: %s", report.OriginGuildName, report.Reason)})
+			}
+
+			embed := &discordgo.MessageEmbed{
+				Title:       "Suspect Found",
+				Color:       BrandedColor,
+				Description: fmt.Sprintf("%s, reported %d time(s)", r1.UserTag, len(list)),
+				Image: &discordgo.MessageEmbedImage{
+					URL: r1.UserPFP,
+				},
+				Fields: fields,
+				Footer: &discordgo.MessageEmbedFooter{
+					Text:    "Written by [REDACTED]#4242",
+					IconURL: "https://cdn.discordapp.com/attachments/781803550598627341/782155510429909012/pfp2.png",
+				},
+			}
+
+			client.ChannelMessageSendEmbed(msg.ChannelID, embed)
 		}
 	}
 

@@ -6,21 +6,34 @@ import (
 	"fmt"
 
 	"database/sql"
+
+	"github.com/jmoiron/sqlx"
+
+	_ "github.com/lib/pq"
 )
 
-var Database *sql.DB
+var Database *sqlx.DB
 
 // watchlist
 
 var (
 	WatchlistADDREPORT   *sql.Stmt
 	WatchlistCOUNT       *sql.Stmt
-	WatchlistUSERREPORTS *sql.Stmt
+	WatchlistUSERREPORTS *sqlx.Stmt
 )
+
+type WatchlistEntree struct {
+	UserID          string `db:"userID"`
+	UserTag         string `db:"userTag"`
+	UserPFP         string `db:"userPFP"`
+	Reason          string `db:"reason"`
+	OriginGuildID   string `db:"originGuildID"`
+	OriginGuildName string `db:"originGuildName"`
+}
 
 func initDB() {
 	var err error
-	Database, err = sql.Open("sqlite3", "./data.db")
+	Database, err = sqlx.Open("sqlite3", "./data.db")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -30,7 +43,7 @@ func initDB() {
 	WatchlistADDREPORT, err = Database.Prepare("INSERT INTO watchlist VALUES (?,?,?,?,?,?)")
 
 	WatchlistCOUNT, err = Database.Prepare("SELECT COUNT(DISTINCT userID) FROM watchlist")
-	WatchlistUSERREPORTS, err = Database.Prepare(`SELECT (*) FROM watchlist WHERE userID = ?`)
+	WatchlistUSERREPORTS, err = Database.Preparex(`SELECT * FROM watchlist WHERE userID = $1`)
 
 	if err != nil {
 		fmt.Println(err)
