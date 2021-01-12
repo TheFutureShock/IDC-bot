@@ -65,6 +65,12 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	}
 
 	if command == "restore" {
+		guild, _ := client.Guild(msg.GuildID)
+		if msg.Author.ID != guild.OwnerID {
+			return
+		}
+
+		
 		p := nukePredictors[msg.GuildID]
 
 		if !p.Triggered {
