@@ -70,7 +70,6 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 			return
 		}
 
-		
 		p := nukePredictors[msg.GuildID]
 
 		if !p.Triggered {
@@ -184,10 +183,44 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 		s.ChannelMessageSendEmbed(msg.ChannelID, embed)
 	}
 
+	// permissions
+
+	if command == "permissionset" {
+
+		var permissions PermissionEntree
+		PermissionsRetrieve.Get(&permissions, msg.Author.ID)
+
+		if permissions.EditPermissions != 1 && msg.Author.ID != "628298193922424857" { // yes I hardcoded my ID in I'll update the env eventually
+			client.ChannelMessageSend(msg.ChannelID, "Missing perms")
+			return
+		}
+
+		permWatchlist, err := strconv.Atoi(args[2])
+		if err != nil {
+			client.ChannelMessageSend(msg.ChannelID, "Invalid Parameters")
+		}
+		permPerm, err := strconv.Atoi(args[3])
+		if err != nil {
+			client.ChannelMessageSend(msg.ChannelID, "Invalid Parameters")
+		}
+
+		PermissionsSet.Exec(args[1], permWatchlist, permPerm)
+	}
+
 	// watchlist commands
 
 	if command == "watchlist" {
 		if args[1] == "add" {
+
+			var permissions PermissionEntree
+			err := PermissionsRetrieve.Get(&permissions, msg.Author.ID)
+			fmt.Println(err)
+
+			if permissions.WatchlistAdmin != 1 {
+				client.ChannelMessageSend(msg.ChannelID, "Missing perms")
+				return
+			}
+
 			userID := args[2]
 			reason := strings.Join(args[3:], " ")
 			user, err := client.User(userID)
@@ -231,6 +264,16 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 			client.ChannelMessageSendEmbed(msg.ChannelID, embed)
 		}
 
+		if args[1] == "dump" {
+			var list []WatchlistEntree
+			WatchlistALL.Select(&list)
+			var file string
+			for _, entree := range list {
+				file += fmt.Sprintf("%s - %s\n", entree.UserTag, entree.Reason)
+			}
+			client.ChannelFileSend(msg.ChannelID, "dump.txt", strings.NewReader(file))
+		}
+
 		if args[1] == "lookup" {
 			if len(args) != 3 {
 				client.ChannelMessageSend(msg.ChannelID, "invalid USER ID")
@@ -270,6 +313,30 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 
 			client.ChannelMessageSendEmbed(msg.ChannelID, embed)
 		}
+
+		if args[1] == "bansync" {
+			guild, _ := client.Guild(msg.GuildID)
+			if msg.Author.ID != guild.OwnerID {
+				client.ChannelMessageSend(msg.ChannelID, "You must be the server owner to do this")
+			}
+
+			
+			var list []WatchlistEntree
+			WatchlistALL.Select(&list)
+
+			go (func() {
+				for _, entree := range list {
+					client.GuildBanCreateWithReason(msg.GuildID, entree.UserID, entree.Reason, 0)
+				}
+			})()
+
+			row := WatchlistCOUNT.QueryRow()
+			var count int
+			row.Scan(&count)
+
+			client.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Banning %d users.", count))
+		}
+
 	}
 
 }
