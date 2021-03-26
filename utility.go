@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"./nukeprediction"
+	"noah/idc-bot/nukeprediction"
 )
 
 func fillPredictors() {
