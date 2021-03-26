@@ -1,7 +1,7 @@
 package main
 
 import (
-	AntiSpam "./antispam"
+	AntiSpam "noah/idc-bot/antispam"
 	"noah/idc-bot/nukeprediction"
 
 	"fmt"
