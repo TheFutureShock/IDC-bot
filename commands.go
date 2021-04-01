@@ -337,6 +337,33 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 			client.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Banning %d users.", count))
 		}
 
-	}
-
-}
+	} if command == "ban" {
+              if discordgo.Message.Member.Permissions &8 != 0 {
+              // If there is a reason:
+                if args[1] {
+                  member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
+                  if err != nil {
+                    return;
+	          }
+	          err = client.GuildBanCreateWithReason(discordgo.Message.GuildID, discordgo.Message.mentions[0].ID, fmt.Sprintf("%s - %s", s.State.User.Username, discordgo.Message.Member))
+	          if err != nil{
+	            return;
+	          }
+                  client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed {
+                    Description: fmt.Sprintf("Successfully Banned: %s for: %s", member)),
+                    Footer: "Written By Shockalicious",  
+                  }
+                }
+             // If there isn't a reason
+                 member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
+                 if err != nil {
+		   return;
+                 }
+	         err = client.GuildBanCreate(discordgo.Message.GuildID, member)
+                 client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed{
+                   Description: fmt.Sprintf("Successfully Banned %s", discordgo.Message.Mentions[0])
+                   Footer: "Written By Shockalicious",
+                 })
+           }
+         }
+      }
