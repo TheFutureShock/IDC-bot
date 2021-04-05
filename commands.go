@@ -365,5 +365,49 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
                    Footer: "Written By Shockalicious",
                  })
            }
-         }
+         } if command == "info" {
+	  client.ChannelMessageSendEmbed(msg.ChannelID, &discordgo.MessageEmbed {
+	    Title: "**__About The Bot__**",
+	    Color: BrandedColor,
+	    Description: `Below is some information about IDC Bot and the committee including:
+	    • History
+	    • General
+	    • Goals
+	    • Development/Bot Team
+	    
+	    This bot was conceived in the December of 2019.
+	    We wanted a bot that could protect against almost any kind of raid; like mass channel deletion, invite deletion, role deletion, etc, any type of nuking or raiding. 
+	    We had no money and no revenue. It was a difficult time finding free developers.
+	    We had a team of 4 developers, who alleged to be making great growth. We’d done a lot for them, and then after about 4 months of "developing", they took off. So, in turn, we were forced to locate a new group. We did, and we made further advancement, however, we felt as though something was still missing, and therefore we continued the search. 
+	    Thanks to that, we found [REDACTED], a very generous, and skilled Go developer, and the IDC bot was created.
+	    
+	    For starters, one of the biggest ones is the anti nuke feature. Being able to stop rogue mods is just amazing. Things even as small as anti joinraid take a lot of effort, and we're even covering stuff like that thanks to our amazing developer. We want to get the list of IDC allied servers, and we're striving to get that soon. It's planned but has yet to be added to the bot.
+	    We have a lot prearranged for this bot
+	    
+	    *Including and not limited to:*
+	    **• Dashboard
+	    • Anti-JoinRaid
+	    • Complete AntiNuke/AutoRestore
+	    • Advanced AutoMod
+	    • Setup Command
+	    • Lockdown Command
+	    • Captcha/Verification
+	    • Anti-Zalgo, Invite, Link, etc
+	    • Filters**
+	    We are so eager about the future and that you are a part of it!
+	    
+	    One day this bot might be able to become the only bot your server will ever need! (Well, that's the goal at least)`,
+	    Fields: []*discordgo.MessageEmbedField{
+	      &discordgo.MessageEmbedField{
+	        Name: "**Development & Management Team**",
+	        Value: `» *[REDACTED]* - Lead Developer
+	        » Shockalicious - Graphics & Marketing
+	        » the bleach boi - Owner of the IDC & Bot Helper`,
+	      },
+	    }, 
+	    Footer: &discordgo.MessageEmbedFooter{
+	      Text: "About the bot!",
+	    },
+	  })
+	}
       }
