@@ -320,7 +320,6 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 				client.ChannelMessageSend(msg.ChannelID, "You must be the server owner to do this")
 			}
 
-			
 			var list []WatchlistEntree
 			WatchlistALL.Select(&list)
 
@@ -337,39 +336,42 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 			client.ChannelMessageSend(msg.ChannelID, fmt.Sprintf("Banning %d users.", count))
 		}
 
-	} if command == "ban" {
-              if discordgo.Message.Member.Permissions &8 != 0 {
-              // If there is a reason:
-                if args[1] {
-                  member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
-                  if err != nil {
-                    return;
-	          }
-	          err = client.GuildBanCreateWithReason(discordgo.Message.GuildID, discordgo.Message.mentions[0].ID, fmt.Sprintf("%s - %s", s.State.User.Username, discordgo.Message.Member))
-	          if err != nil{
-	            return;
-	          }
-                  client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed {
-                    Description: fmt.Sprintf("Successfully Banned: %s for: %s", member)),
-                    Footer: "Written By Shockalicious",  
-                  }
-                }
-             // If there isn't a reason
-                 member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
-                 if err != nil {
-		   return;
-                 }
-	         err = client.GuildBanCreate(discordgo.Message.GuildID, member)
-                 client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed{
-                   Description: fmt.Sprintf("Successfully Banned %s", discordgo.Message.Mentions[0])
-                   Footer: "Written By Shockalicious",
-                 })
-           }
-         } if command == "info" {
-	  client.ChannelMessageSendEmbed(msg.ChannelID, &discordgo.MessageEmbed {
-	    Title: "**__About The Bot__**",
-	    Color: BrandedColor,
-	    Description: `Below is some information about IDC Bot and the committee including:
+	}
+	if command == "ban" {
+		if discordgo.Message.Member.Permissions&8 != 0 {
+			// If there is a reason:
+			if args[1] {
+				member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
+				if err != nil {
+					return
+				}
+				err = client.GuildBanCreateWithReason(discordgo.Message.GuildID, discordgo.Message.mentions[0].ID, fmt.Sprintf("%s - %s", s.State.User.Username, discordgo.Message.Member))
+				if err != nil {
+					return
+				}
+				client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed{
+					Description: fmt.Sprintf("Successfully Banned: %s for: %s", member),
+					Footer:      "Written By Shockalicious",
+				})
+
+				// If there isn't a reason
+				member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
+				if err != nil {
+					return
+				}
+				err = client.GuildBanCreate(discordgo.Message.GuildID, member)
+				client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed{
+					Description: fmt.Sprintf("Successfully Banned %s", discordgo.Message.Mentions[0]),
+					Footer:      "Written By Shockalicious",
+				})
+			}
+		}
+	}
+	if command == "info" {
+		client.ChannelMessageSendEmbed(msg.ChannelID, &discordgo.MessageEmbed{
+			Title: "**__About The Bot__**",
+			Color: BrandedColor,
+			Description: `Below is some information about IDC Bot and the committee including:
 	    • History
 	    • General
 	    • Goals
@@ -397,17 +399,17 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 	    We are so eager about the future and that you are a part of it!
 	    
 	    One day this bot might be able to become the only bot your server will ever need! (Well, that's the goal at least)`,
-	    Fields: []*discordgo.MessageEmbedField{
-	      &discordgo.MessageEmbedField{
-	        Name: "**Development & Management Team**",
-	        Value: `» *[REDACTED]* - Lead Developer
+			Fields: []*discordgo.MessageEmbedField{
+				&discordgo.MessageEmbedField{
+					Name: "**Development & Management Team**",
+					Value: `» *[REDACTED]* - Lead Developer
 	        » Shockalicious - Graphics & Marketing
 	        » the bleach boi - Owner of the IDC & Bot Helper`,
-	      },
-	    }, 
-	    Footer: &discordgo.MessageEmbedFooter{
-	      Text: "About the bot!",
-	    },
-	  })
+				},
+			},
+			Footer: &discordgo.MessageEmbedFooter{
+				Text: "About the bot!",
+			},
+		})
 	}
-      }
+}
