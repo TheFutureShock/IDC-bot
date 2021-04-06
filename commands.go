@@ -338,7 +338,7 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 
 	}
 	if command == "ban" {
-		if discordgo.Message.Member.Permissions&8 != 0 {
+		if userPerms(msg.GuildID, msg.Author.ID)&discordgo.PermissionBanMembers != 0 {
 			// If there is a reason:
 			if args[1] {
 				member, err := client.GuildMember(discordgo.Message.GuildID, discordgo.Message.Mentions[0].ID)
