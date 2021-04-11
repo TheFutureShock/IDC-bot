@@ -351,7 +351,9 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 				}
 				client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed{
 					Description: fmt.Sprintf("Successfully Banned: %s for: %s", member),
-					Footer:      "Written By Shockalicious",
+					Footer:      &discordgo.MessageEmbedFooter {
+                                                     Text: "Written By Shockalicious",
+                                                     },
 				})
 
 				// If there isn't a reason
@@ -362,8 +364,11 @@ func OnMsg(s *discordgo.Session, msg *discordgo.MessageCreate) {
 				err = client.GuildBanCreate(discordgo.Message.GuildID, member)
 				client.ChannelMessageSendEmbed(discordgo.Message.ChannelID, &discordgo.MessageEmbed{
 					Description: fmt.Sprintf("Successfully Banned %s", discordgo.Message.Mentions[0]),
-					Footer:      "Written By Shockalicious",
-				})
+					Footer:      &discordgo.MessageEmbedFooter{
+                                                     Text: "Written By Shockalicious",
+                                                     }
+				
+                                })
 			}
 		}
 	}
